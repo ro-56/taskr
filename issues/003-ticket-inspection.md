@@ -3,7 +3,7 @@ id: "003"
 title: "Ticket inspection (taskr show)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build
