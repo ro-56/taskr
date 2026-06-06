@@ -1,2 +1,3 @@
 # Project buildable binary
 taskr
+.tickets/*
