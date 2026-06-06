@@ -12,9 +12,9 @@ Canonical fields: `id`, `title`, `status`, `type`, `priority`, `mode`, `created`
 
 ## Ticket ID
 
-Format: `<PREFIX>-<8-char hex hash>` (e.g. `TKT-a3f8bc2d`). PREFIX set at `taskr init`, stored in `.tickets/config.json`. Hash is random, generated at creation.
+Format: `<PREFIX>-<n>` where `n` is a monotonically increasing integer with no zero-padding (e.g. `TKT-1`, `TKT-42`). PREFIX set at `taskr init`, stored in `.tickets/config.json`. The next integer to assign is stored as `next_id` in `config.json` and incremented on every `taskr add`.
 
-Partial ID resolution: prefix-match against filenames in both `.tickets/` and `.tickets/archive/`. On ambiguity, error and list all matches.
+Resolution: accepts either the full ID (`TKT-42`) or a bare number (`42`). Bare numbers are expanded to `PREFIX-<n>` before lookup. Exact match only — no prefix-matching.
 
 ## PREFIX
 
