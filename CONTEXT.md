@@ -1,5 +1,9 @@
 # taskr — Domain Glossary
 
+## Implementation Language
+
+Go. Single static binary, built-in cross-compilation for Linux and Windows (`GOOS=linux`/`GOOS=windows`). Key dependencies: `cobra` for the multi-subcommand CLI, `gopkg.in/yaml.v3` for frontmatter parsing.
+
 ## Ticket
 
 A markdown file representing a unit of work. Stored in `.tickets/<id>.md` (active) or `.tickets/archive/<id>.md` (closed).
