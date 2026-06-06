@@ -28,20 +28,6 @@ TASKR_VERSION=v1.2.3 curl -fsSL https://raw.githubusercontent.com/ro-56/taskr/ma
 
 Pre-built binaries for all platforms are available on the [releases page](https://github.com/ro-56/taskr/releases).
 
-## Uninstall
-
-**Linux / macOS:**
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/ro-56/taskr/main/uninstall.sh | bash
-```
-
-**Windows (PowerShell):**
-
-```powershell
-irm https://raw.githubusercontent.com/ro-56/taskr/main/uninstall.ps1 | iex
-```
-
 **Build from source** (requires Go):
 
 ```sh
@@ -54,6 +40,20 @@ Or:
 git clone https://github.com/ro-56/taskr
 cd taskr
 go build -ldflags "-X main.version=1.0.0" -o taskr .
+```
+
+## Uninstall
+
+**Linux / macOS:**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/ro-56/taskr/main/uninstall.sh | bash
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/ro-56/taskr/main/uninstall.ps1 | iex
 ```
 
 ## Quick start
@@ -81,11 +81,8 @@ taskr close TKT-a3f8bc2d --summary "shipped in abc1234"
 |---------|-------------|
 | `taskr add "title"` | Create a ticket. Returns its ID. |
 | `taskr show <id>` | Show frontmatter, body, and dependency graph. Accepts partial IDs. |
-| `taskr update <id> [flags]` | Update frontmatter fields non-interactively. |
 | `taskr start <id>` | Set status to `in_progress`. |
 | `taskr close <id>` | Close and archive a ticket. |
-
-`taskr update` flags: `--title`, `--priority`, `--tags`, `--mode`
 
 `taskr close` flags: `--summary` (optional note appended to the ticket)
 
@@ -95,16 +92,7 @@ taskr close TKT-a3f8bc2d --summary "shipped in abc1234"
 |---------|-------------|
 | `taskr ready` | Non-terminal, unblocked tickets sorted by priority. |
 | `taskr ready --mode afk` | Only agent-runnable tickets. |
-| `taskr blocked` | Tickets with at least one open dependency. |
-
-### Lists
-
-| Command | Description |
-|---------|-------------|
-| `taskr list` / `taskr ls` | List tickets. |
-| `taskr list --status <status>` | Filter by status. |
-| `taskr list --count` | Count tickets by status. |
-| `taskr list --tags` | Show all tags across all tickets. |
+| `taskr blocked` | Tickets with at least one open or in-progress dependency. |
 
 ### Dependencies
 
@@ -115,7 +103,12 @@ taskr close TKT-a3f8bc2d --summary "shipped in abc1234"
 | `taskr prune <id>` | Remove all dependency and link relationships for a ticket. |
 | `taskr dep-tree <id>` | ASCII tree of first-degree dependencies. |
 | `taskr dep-tree <id> --full` | Fully recursive tree. |
-| `taskr relate <id1> <id2>` | Add a symmetric, non-blocking link between two tickets. |
+
+### Maintenance
+
+| Command | Description |
+|---------|-------------|
+| `taskr check` | Validate all tickets and report invariant violations. Exits non-zero if any are found. |
 
 ## Ticket schema
 
