@@ -28,6 +28,20 @@ TASKR_VERSION=v1.2.3 curl -fsSL https://raw.githubusercontent.com/ro-56/taskr/ma
 
 Pre-built binaries for all platforms are available on the [releases page](https://github.com/ro-56/taskr/releases).
 
+## Uninstall
+
+**Linux / macOS:**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/ro-56/taskr/main/uninstall.sh | bash
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/ro-56/taskr/main/uninstall.ps1 | iex
+```
+
 **Build from source** (requires Go):
 
 ```sh
