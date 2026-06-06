@@ -3,7 +3,7 @@ id: "006"
 title: "Symmetric links (taskr relate)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build
