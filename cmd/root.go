@@ -13,3 +13,8 @@ var rootCmd = &cobra.Command{
 func Execute() error {
 	return rootCmd.Execute()
 }
+
+func SetVersion(v string) {
+	rootCmd.Version = v
+	rootCmd.SetVersionTemplate("Version: {{.Version}}\n")
+}

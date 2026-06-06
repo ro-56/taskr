@@ -3,7 +3,7 @@ id: "011"
 title: "Add --version flag"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build

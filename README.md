@@ -17,7 +17,7 @@ Or build from source:
 ```sh
 git clone https://github.com/ro-56/taskr
 cd taskr
-go build -o taskr .
+go build -ldflags "-X main.version=1.0.0" -o taskr .
 ```
 
 ## Quick start
@@ -35,6 +35,7 @@ taskr close TKT-a3f8bc2d --summary "shipped in abc1234"
 
 | Command | Description |
 |---------|-------------|
+| `taskr --version` / `taskr -v` | Print the binary version and exit. |
 | `taskr init` | Create `.tickets/` and `.tickets/config.json`. Re-running on an initialized project is a no-op. |
 | `taskr init --prefix FOO` | Set a custom prefix (default: uppercased directory name). |
 
