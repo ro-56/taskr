@@ -44,7 +44,7 @@ A ticket is **blocked** if it has at least one dependency with status `open` or 
 
 ## Link (related)
 
-A symmetric, non-directional relationship between two tickets. Stored in both tickets' `links` frontmatter list. Created via `taskr relate`. No blocking semantics.
+A symmetric, non-directional relationship between two tickets. Stored in both tickets' `links` frontmatter list. Created via `taskr relate`, which accepts two or more IDs and links all pairs in a single call. No blocking semantics. `taskr prune` does **not** remove related links — only `dependencies` are pruned.
 
 ## Archive
 
@@ -78,3 +78,15 @@ A ticket is **ready** if: status is non-terminal (`open` or `in_progress`) AND i
 ## Config
 
 `.tickets/config.json` — project-level configuration. Contains at minimum the PREFIX. `taskr init` creates this file. Re-running `taskr init` on an already-initialized project is a no-op with a message.
+
+## Tags
+
+Free-form string labels on a ticket. Stored as a list in the `tags` frontmatter field. Set at creation with `taskr add --tags` or updated with `taskr update --tags` (replaces the entire list). `taskr list --tags` prints all unique tags across active tickets.
+
+## Update
+
+`taskr update <id>` modifies one or more frontmatter fields of an existing ticket without changing its status. Only flags that are explicitly supplied are written; omitted flags leave the corresponding field unchanged. Updatable fields: `title`, `priority`, `mode`, `tags`, `body`.
+
+## List
+
+`taskr list` (alias `taskr ls`) prints all active tickets. Flags: `--status <status>` filters by status (use `closed` to include archived tickets); `--tags` prints all unique tags; `--count` prints per-status ticket counts.

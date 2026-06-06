@@ -29,7 +29,7 @@ The repo has two layers:
 
 **`internal/tickets/`** — All business logic. Functions take `dir string` (the project root) as their first argument. No global state.
 
-The **frontmatter is tool-owned**; the **body is user-owned**. Commands only rewrite the body when explicitly asked (e.g., `close --summary`).
+The **frontmatter is tool-owned**; the **body is user-owned**. Commands only rewrite the body when explicitly asked (e.g., `close --summary`, `update --body`).
 
 ### Storage layout
 
@@ -62,5 +62,22 @@ Dependencies are stored as a list of full IDs in the dependent ticket's `depende
 | Modes | `afk` (agent-runnable), `hitl` (needs human) |
 | Priority | `0`=critical … `3`=low; default `2` |
 | ID format | `PREFIX-[0-9a-f]{8}` |
+| Relationships | `dependencies` (directional, blocking); `links` (symmetric, non-blocking via `relate`) |
+
+### Commands at a glance
+
+| Command | Purpose |
+|---|---|
+| `init` | Create `.tickets/` scaffold |
+| `add` | Create a ticket |
+| `show` | Display ticket + dependency graph |
+| `update` | Edit fields non-interactively |
+| `start` / `close` | Transition status |
+| `list` / `ls` | List tickets; `--status`, `--tags`, `--count` |
+| `ready` / `blocked` | Work-queue queries |
+| `link` / `unlink` / `prune` | Manage `dependencies` |
+| `relate` | Add symmetric `links` (2+ IDs) |
+| `dep-tree` | ASCII dependency tree |
+| `check` | Validate invariants |
 
 See `CONTEXT.md` for the full authoritative glossary.

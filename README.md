@@ -81,18 +81,43 @@ taskr close TKT-a3f8bc2d --summary "shipped in abc1234"
 |---------|-------------|
 | `taskr add "title"` | Create a ticket. Returns its ID. |
 | `taskr show <id>` | Show frontmatter, body, and dependency graph. Accepts partial IDs. |
+| `taskr update <id>` | Update one or more ticket fields non-interactively. |
 | `taskr start <id>` | Set status to `in_progress`. |
 | `taskr close <id>` | Close and archive a ticket. |
 
-`taskr close` flags: `--summary` (optional note appended to the ticket)
+`taskr add` flags:
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--type` | `task` | Ticket type: `bug`, `feature`, `task`, `epic`, `chore` |
+| `--priority` | `2` | Priority `0`=critical … `3`=low |
+| `--mode` | `hitl` | Mode: `afk` or `hitl` |
+| `--tags` | _(none)_ | Comma-separated tags |
+| `--body` | _(empty)_ | Initial ticket body (markdown) |
+
+`taskr update` flags (only supplied flags are changed):
+
+| Flag | Description |
+|------|-------------|
+| `--title` | New title |
+| `--priority` | New priority (`0`–`3`) |
+| `--mode` | New mode (`afk` or `hitl`) |
+| `--tags` | Comma-separated tags (replaces existing) |
+| `--body` | New body content (replaces existing; empty string clears body) |
+
+`taskr close` flags: `--summary` (optional note appended to the ticket before archiving)
 
 ### Finding work
 
 | Command | Description |
 |---------|-------------|
-| `taskr ready` | Non-terminal, unblocked tickets sorted by priority. |
+| `taskr ready` | Non-terminal, unblocked tickets sorted by priority, then by most recently updated. |
 | `taskr ready --mode afk` | Only agent-runnable tickets. |
 | `taskr blocked` | Tickets with at least one open or in-progress dependency. |
+| `taskr list` / `taskr ls` | List all active tickets with ID, status, and title. |
+| `taskr list --status <status>` | Filter by status (`open`, `in_progress`, `closed`). |
+| `taskr list --tags` | Print all unique tags across active tickets. |
+| `taskr list --count` | Print per-status ticket counts. |
 
 ### Dependencies
 
@@ -100,9 +125,15 @@ taskr close TKT-a3f8bc2d --summary "shipped in abc1234"
 |---------|-------------|
 | `taskr link <dependent> <depends-on>` | Add a dependency (cycle-checked). |
 | `taskr unlink <dependent> <depends-on>` | Remove a dependency. |
-| `taskr prune <id>` | Remove all dependency and link relationships for a ticket. |
+| `taskr prune <id>` | Clear a ticket's own dependencies and remove it from all other tickets' dependency lists. |
 | `taskr dep-tree <id>` | ASCII tree of first-degree dependencies. |
 | `taskr dep-tree <id> --full` | Fully recursive tree. |
+
+### Related tickets
+
+| Command | Description |
+|---------|-------------|
+| `taskr relate <id> <id> [id ...]` | Create bidirectional related links between all provided tickets. Accepts two or more IDs. |
 
 ### Maintenance
 
