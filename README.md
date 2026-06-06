@@ -8,11 +8,33 @@ A file-based issue tracker for the command line. Tickets are plain markdown file
 
 ## Install
 
+**Linux / macOS:**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/ro-56/taskr/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/ro-56/taskr/main/install.ps1 | iex
+```
+
+To pin a specific version, set `TASKR_VERSION` before running:
+
+```sh
+TASKR_VERSION=v1.2.3 curl -fsSL https://raw.githubusercontent.com/ro-56/taskr/main/install.sh | bash
+```
+
+Pre-built binaries for all platforms are available on the [releases page](https://github.com/ro-56/taskr/releases).
+
+**Build from source** (requires Go):
+
 ```sh
 go install github.com/ro-56/taskr@latest
 ```
 
-Or build from source:
+Or:
 
 ```sh
 git clone https://github.com/ro-56/taskr

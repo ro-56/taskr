@@ -3,7 +3,7 @@ id: "012"
 title: "Validation command (taskr check)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build

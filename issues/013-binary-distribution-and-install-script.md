@@ -3,7 +3,7 @@ id: "013"
 title: "Binary distribution + install script"
 type: feature
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build
