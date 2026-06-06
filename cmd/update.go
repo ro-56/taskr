@@ -39,6 +39,10 @@ var updateCmd = &cobra.Command{
 			raw, _ := flags.GetString("tags")
 			opts.Tags = strings.Split(raw, ",")
 		}
+		if flags.Changed("body") {
+			v, _ := flags.GetString("body")
+			opts.Body = &v
+		}
 
 		err = tickets.Update(cwd, args[0], opts)
 		if err != nil {
@@ -75,5 +79,6 @@ func init() {
 	updateCmd.Flags().Int("priority", 0, "New priority (0–3)")
 	updateCmd.Flags().String("mode", "", "New mode (afk or hitl)")
 	updateCmd.Flags().String("tags", "", "Comma-separated tags (replaces existing)")
+	updateCmd.Flags().String("body", "", "New body content (replaces existing; empty string clears body)")
 	rootCmd.AddCommand(updateCmd)
 }

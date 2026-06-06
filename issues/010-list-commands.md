@@ -3,7 +3,7 @@ id: "010"
 title: "List commands (taskr list, taskr ls)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build

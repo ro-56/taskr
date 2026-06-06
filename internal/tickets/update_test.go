@@ -186,3 +186,74 @@ func TestUpdate_PartialID(t *testing.T) {
 		t.Errorf("title: got %q, want %q", got, "patched")
 	}
 }
+
+func TestUpdate_Body_WithTitle(t *testing.T) {
+	dir := t.TempDir()
+	id := setupTicket(t, dir, tickets.AddOptions{Title: "old"})
+
+	opts := tickets.UpdateOptions{
+		Title: ptr("new title"),
+		Body:  ptr("## Notes\n\ndetails"),
+	}
+	if err := tickets.Update(dir, id, opts); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	result, _ := tickets.Show(dir, id)
+	if got := result.Frontmatter["title"]; got != "new title" {
+		t.Errorf("title: got %q", got)
+	}
+	if got := result.Body; got != "## Notes\n\ndetails" {
+		t.Errorf("body: got %q", got)
+	}
+}
+
+func TestUpdate_Body_Preserved(t *testing.T) {
+	dir := t.TempDir()
+	id := setupTicket(t, dir, tickets.AddOptions{Title: "preserve body"})
+	tickets.Update(dir, id, tickets.UpdateOptions{Body: ptr("keep this")})
+
+	if err := tickets.Update(dir, id, tickets.UpdateOptions{Title: ptr("new title")}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	result, _ := tickets.Show(dir, id)
+	if got := result.Body; got != "keep this" {
+		t.Errorf("body should be unchanged, got %q", got)
+	}
+}
+
+func TestUpdate_Body_Clear(t *testing.T) {
+	dir := t.TempDir()
+	id := setupTicket(t, dir, tickets.AddOptions{Title: "clear body"})
+	tickets.Update(dir, id, tickets.UpdateOptions{Body: ptr("some existing content")})
+
+	if err := tickets.Update(dir, id, tickets.UpdateOptions{Body: ptr("")}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	result, _ := tickets.Show(dir, id)
+	if got := result.Body; got != "" {
+		t.Errorf("body should be empty after clear, got %q", got)
+	}
+}
+
+func TestUpdate_Body(t *testing.T) {
+	dir := t.TempDir()
+	id := setupTicket(t, dir, tickets.AddOptions{Title: "body test"})
+
+	before := time.Now().UTC().Add(-time.Second)
+	if err := tickets.Update(dir, id, tickets.UpdateOptions{Body: ptr("## Description\n\nsome details")}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	result, _ := tickets.Show(dir, id)
+	if got := result.Body; got != "## Description\n\nsome details" {
+		t.Errorf("body: got %q, want %q", got, "## Description\n\nsome details")
+	}
+	raw, _ := result.Frontmatter["updated"].(string)
+	ts, _ := time.Parse(time.RFC3339, raw)
+	if !ts.After(before) {
+		t.Errorf("updated not bumped: %v", ts)
+	}
+}

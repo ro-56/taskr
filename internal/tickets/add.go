@@ -1,17 +1,13 @@
 package tickets
 
 import (
-	"bytes"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"time"
-
-	"gopkg.in/yaml.v3"
 )
 
 var ErrNotInitialized = errors.New("not initialized: run taskr init first")
@@ -22,6 +18,7 @@ type AddOptions struct {
 	Priority *int // nil = use default (2)
 	Mode     string
 	Tags     []string
+	Body     string
 }
 
 func Add(dir string, opts AddOptions) (string, error) {
@@ -77,16 +74,8 @@ func Add(dir string, opts AddOptions) (string, error) {
 		"tags":         tags,
 	}
 
-	fm, err := yaml.Marshal(frontmatter)
-	if err != nil {
-		return "", err
-	}
-
-	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "---\n%s---\n", fm)
-
 	ticketPath := filepath.Join(ticketsDir, id+".md")
-	if err := os.WriteFile(ticketPath, buf.Bytes(), 0644); err != nil {
+	if err := writeTicket(ticketPath, frontmatter, opts.Body); err != nil {
 		return "", err
 	}
 

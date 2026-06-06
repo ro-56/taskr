@@ -14,6 +14,9 @@ RUN curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" \
     | tar -C /usr/local -xz
 ENV PATH="/usr/local/go/bin:${PATH}"
 
+# Install Taskr
+RUN curl -fsSL https://raw.githubusercontent.com/ro-56/taskr/main/install.sh | bash
+
 ARG USERNAME=devuser
 
 RUN useradd -m -s /bin/bash $USERNAME

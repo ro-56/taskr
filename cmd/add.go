@@ -13,6 +13,7 @@ var (
 	addPriority int
 	addMode     string
 	addTags     []string
+	addBody     string
 )
 
 var addCmd = &cobra.Command{
@@ -32,6 +33,7 @@ var addCmd = &cobra.Command{
 			Priority: &p,
 			Mode:     addMode,
 			Tags:     addTags,
+			Body:     addBody,
 		}
 
 		id, err := tickets.Add(cwd, opts)
@@ -53,5 +55,6 @@ func init() {
 	addCmd.Flags().IntVar(&addPriority, "priority", 2, "priority 0=critical … 3=low")
 	addCmd.Flags().StringVar(&addMode, "mode", "hitl", "mode (afk, hitl)")
 	addCmd.Flags().StringSliceVar(&addTags, "tags", nil, "comma-separated tags")
+	addCmd.Flags().StringVar(&addBody, "body", "", "initial ticket body (markdown)")
 	rootCmd.AddCommand(addCmd)
 }

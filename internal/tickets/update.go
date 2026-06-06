@@ -15,6 +15,7 @@ type UpdateOptions struct {
 	Priority *int
 	Mode     *string
 	Tags     []string
+	Body     *string
 }
 
 func Update(dir, partialID string, opts UpdateOptions) error {
@@ -56,6 +57,10 @@ func Update(dir, partialID string, opts UpdateOptions) error {
 
 	if opts.Tags != nil {
 		fm["tags"] = opts.Tags
+	}
+
+	if opts.Body != nil {
+		body = *opts.Body
 	}
 
 	fm["updated"] = time.Now().UTC().Format(time.RFC3339)

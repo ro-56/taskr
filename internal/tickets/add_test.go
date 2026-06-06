@@ -207,6 +207,40 @@ func TestAdd_PriorityCritical(t *testing.T) {
 	}
 }
 
+func TestAdd_Body(t *testing.T) {
+	dir := t.TempDir()
+	if err := tickets.Init(dir, "TKT"); err != nil {
+		t.Fatal(err)
+	}
+
+	id, err := tickets.Add(dir, tickets.AddOptions{Title: "body ticket", Body: "## Description\n\ndetails here"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	result, _ := tickets.Show(dir, id)
+	if got := result.Body; got != "## Description\n\ndetails here" {
+		t.Errorf("body: got %q, want %q", got, "## Description\n\ndetails here")
+	}
+}
+
+func TestAdd_NoBody(t *testing.T) {
+	dir := t.TempDir()
+	if err := tickets.Init(dir, "TKT"); err != nil {
+		t.Fatal(err)
+	}
+
+	id, err := tickets.Add(dir, tickets.AddOptions{Title: "no body ticket"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	result, _ := tickets.Show(dir, id)
+	if got := result.Body; got != "" {
+		t.Errorf("body should be empty, got %q", got)
+	}
+}
+
 func TestAdd_NotInitialized(t *testing.T) {
 	dir := t.TempDir()
 
