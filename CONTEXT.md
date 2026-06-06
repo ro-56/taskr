@@ -50,6 +50,10 @@ A symmetric, non-directional relationship between two tickets. Stored in both ti
 
 Closed tickets move from `.tickets/` to `.tickets/archive/` on `taskr close`. Active listing excludes archived tickets; partial ID resolution includes them.
 
+## Body
+
+The free-form markdown content below the frontmatter fence in a ticket file. Owned by the user — the tool never rewrites it except when explicitly instructed (e.g. `taskr update --body`). Frontmatter is tool-owned; body is user-owned. An empty body is valid.
+
 ## Violation
 
 A broken invariant detected by `taskr check` in a ticket file. Each violation is reported as a single line prefixed by the ticket ID, e.g. `TKT-a3f8bc2d: dependency TKT-deadbeef not found`. Output is machine-readable so an LLM or script can act on it.

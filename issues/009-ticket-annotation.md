@@ -3,7 +3,7 @@ id: "009"
 title: "Ticket annotation (taskr update)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build
