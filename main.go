@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rodrigo/taskr/cmd"
+	"github.com/ro-56/taskr/cmd"
 )
 
 func main() {

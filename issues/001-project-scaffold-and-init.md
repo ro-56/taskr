@@ -3,7 +3,7 @@ id: "001"
 title: "Project scaffold + taskr init"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build

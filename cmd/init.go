@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rodrigo/taskr/internal/tickets"
+	"github.com/ro-56/taskr/internal/tickets"
 	"github.com/spf13/cobra"
 )
 

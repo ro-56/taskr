@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/rodrigo/taskr/internal/tickets"
+	"github.com/ro-56/taskr/internal/tickets"
 )
 
 func TestInit_CustomPrefix(t *testing.T) {

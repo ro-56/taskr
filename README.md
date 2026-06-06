@@ -1,0 +1,113 @@
+# taskr
+
+A file-based issue tracker for the command line. Tickets are plain markdown files — version-controlled, greppable, and independently grabbable by agents or humans.
+
+## How it works
+
+`taskr init` creates a `.tickets/` directory in your project. Each ticket is a markdown file with YAML frontmatter (`TKT-a3f8bc2d.md`). Closed tickets are archived to `.tickets/archive/`. Everything lives alongside your code.
+
+## Install
+
+```sh
+go install github.com/ro-56/taskr@latest
+```
+
+Or build from source:
+
+```sh
+git clone https://github.com/ro-56/taskr
+cd taskr
+go build -o taskr .
+```
+
+## Quick start
+
+```sh
+taskr init                        # set up .tickets/ in current directory
+taskr add "Fix login timeout"     # create a ticket, prints its ID
+taskr start TKT-a3f8bc2d          # mark in_progress
+taskr close TKT-a3f8bc2d --summary "shipped in abc1234"
+```
+
+## Commands
+
+### Setup
+
+| Command | Description |
+|---------|-------------|
+| `taskr init` | Create `.tickets/` and `.tickets/config.json`. Re-running on an initialized project is a no-op. |
+| `taskr init --prefix FOO` | Set a custom prefix (default: uppercased directory name). |
+
+### Tickets
+
+| Command | Description |
+|---------|-------------|
+| `taskr add "title"` | Create a ticket. Returns its ID. |
+| `taskr show <id>` | Show frontmatter, body, and dependency graph. Accepts partial IDs. |
+| `taskr update <id> [flags]` | Update frontmatter fields non-interactively. |
+| `taskr start <id>` | Set status to `in_progress`. |
+| `taskr close <id>` | Close and archive a ticket. |
+
+`taskr update` flags: `--title`, `--priority`, `--tags`, `--mode`
+
+`taskr close` flags: `--summary` (optional note appended to the ticket)
+
+### Finding work
+
+| Command | Description |
+|---------|-------------|
+| `taskr ready` | Non-terminal, unblocked tickets sorted by priority. |
+| `taskr ready --mode afk` | Only agent-runnable tickets. |
+| `taskr blocked` | Tickets with at least one open dependency. |
+
+### Lists
+
+| Command | Description |
+|---------|-------------|
+| `taskr list` / `taskr ls` | List tickets. |
+| `taskr list --status <status>` | Filter by status. |
+| `taskr list --count` | Count tickets by status. |
+| `taskr list --tags` | Show all tags across all tickets. |
+
+### Dependencies
+
+| Command | Description |
+|---------|-------------|
+| `taskr link <dependent> <depends-on>` | Add a dependency (cycle-checked). |
+| `taskr unlink <dependent> <depends-on>` | Remove a dependency. |
+| `taskr prune <id>` | Remove all dependency and link relationships for a ticket. |
+| `taskr dep-tree <id>` | ASCII tree of first-degree dependencies. |
+| `taskr dep-tree <id> --full` | Fully recursive tree. |
+| `taskr relate <id1> <id2>` | Add a symmetric, non-blocking link between two tickets. |
+
+## Ticket schema
+
+```yaml
+---
+id: TKT-a3f8bc2d
+title: "Fix login timeout"
+status: open           # open | in_progress | closed
+type: task             # bug | feature | task | epic | chore
+priority: 2            # 0 = critical, 1 = high, 2 = medium, 3 = low
+mode: hitl             # afk (agent-runnable) | hitl (needs a human)
+created: '2026-01-01T00:00:00Z'
+updated: '2026-01-01T00:00:00Z'
+dependencies: []
+links: []
+tags: []
+---
+```
+
+**Priority:** `0` = critical (highest), `3` = low. Default: `2`.
+
+**Mode:** `afk` tickets can be picked up by an agent without human involvement. `hitl` tickets require a human in the loop.
+
+**Blocking:** a ticket is blocked if any of its `dependencies` has status `open` or `in_progress`.
+
+## Partial IDs
+
+Any command that takes an ID also accepts a prefix. `taskr show a3f8` resolves to the unique matching ticket. If multiple tickets match, taskr lists them and exits with an error.
+
+## License
+
+MIT

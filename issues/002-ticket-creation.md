@@ -3,7 +3,7 @@ id: "002"
 title: "Ticket creation (taskr add)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build
