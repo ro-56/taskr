@@ -1,0 +1,64 @@
+# taskr — Domain Glossary
+
+## Ticket
+
+A markdown file representing a unit of work. Stored in `.tickets/<id>.md` (active) or `.tickets/archive/<id>.md` (closed).
+
+Canonical fields: `id`, `title`, `status`, `type`, `priority`, `mode`, `created`, `updated`, `dependencies`, `links`, `tags`.
+
+## Ticket ID
+
+Format: `<PREFIX>-<8-char hex hash>` (e.g. `TKT-a3f8bc2d`). PREFIX set at `taskr init`, stored in `.tickets/config.json`. Hash is random, generated at creation.
+
+Partial ID resolution: prefix-match against filenames in both `.tickets/` and `.tickets/archive/`. On ambiguity, error and list all matches.
+
+## PREFIX
+
+A short uppercase slug identifying the project. Set by the user at `taskr init` (e.g. `--prefix TKT`). Defaults to an uppercase slug of the current directory name. Stored in `.tickets/config.json`.
+
+## Status
+
+One of: `open`, `in_progress`, `closed`. Terminal status: `closed`. Workflow: `open → in_progress → closed`.
+
+## Priority
+
+Integer 0–3. `0` = critical (highest urgency), `3` = low. Default: `2` (medium). `taskr ready` sorts ascending by priority; ties broken by `updated` descending (most recently edited first).
+
+## Mode
+
+`afk` = agent-runnable without human involvement. `hitl` = requires a human in the loop. Default: `hitl`.
+
+## Type
+
+One of: `bug`, `feature`, `task`, `epic`, `chore`. Default: `task`.
+
+## Dependency
+
+A directional relationship: ticket A **depends on** ticket B means A cannot proceed until B is closed. Stored in A's `dependencies` frontmatter list. Cycle-checked on creation — cycles not allowed.
+
+A ticket is **blocked** if it has at least one dependency with status `open` or `in_progress`.
+
+## Link (related)
+
+A symmetric, non-directional relationship between two tickets. Stored in both tickets' `links` frontmatter list. Created via `taskr relate`. No blocking semantics.
+
+## Archive
+
+Closed tickets move from `.tickets/` to `.tickets/archive/` on `taskr close`. Active listing excludes archived tickets; partial ID resolution includes them.
+
+## Graph Context
+
+Compact dependency summary shown in `taskr show`:
+```
+depends on:  TKT-a3f8bc2 (open), TKT-1234567 (closed)
+required by: TKT-9999abc (open)
+```
+First-degree only. Full tree via `taskr dep-tree`.
+
+## Ready
+
+A ticket is **ready** if: status is non-terminal (`open` or `in_progress`) AND it has no blocking dependencies (all deps closed). `taskr ready` lists these sorted by priority ascending, then updated descending.
+
+## Config
+
+`.tickets/config.json` — project-level configuration. Contains at minimum the PREFIX. `taskr init` creates this file. Re-running `taskr init` on an already-initialized project is a no-op with a message.

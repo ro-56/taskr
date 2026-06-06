@@ -1,0 +1,66 @@
+{
+  "name": "Sandbox",
+
+  // Points to the Dockerfile relative to this JSON file
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "TZ": "${localEnv:TZ:America/Sao_Paulo}"
+    }
+  },
+
+  // Automatically install IDE extensions inside the container
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        },
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        }
+      },
+      "extensions": [
+        "anthropic.claude-code",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+
+  // Command to run dependencies *after* the container is fully mounted
+  "postCreateCommand": "echo 'Container setup complete!'",
+
+  // User to use inside the container, that does not have root privileges
+  "remoteUser": "devuser",
+
+  // Mount a Docker volume for persistent Claude Code configuration
+  "mounts": [
+    // "source=claude-code-config-${devcontainerId},target=/home/devuser/.claude,type=volume"
+    "source=${localEnv:USERPROFILE}/.claude,target=/home/devuser/.claude,type=bind",
+    "source=${localEnv:USERPROFILE}/.claude/commandhistory/${devcontainerId},target=/commandhistory,type=bind"
+  ],
+
+  // Environment variables
+  "containerEnv": {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+
+  // Mount the workspace folder into the container
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+  "workspaceFolder": "/workspace"
+
+  // "features": {
+  //   "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  // }
+
+}
