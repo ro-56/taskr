@@ -32,7 +32,8 @@
       "extensions": [
         "anthropic.claude-code",
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "golang.go"
       ]
     }
   },

@@ -3,7 +3,7 @@ id: "007"
 title: "Work queue (taskr ready, taskr blocked)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build
