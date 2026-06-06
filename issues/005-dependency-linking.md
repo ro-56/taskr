@@ -3,7 +3,7 @@ id: "005"
 title: "Dependency linking (taskr link, taskr unlink, taskr prune)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build

@@ -3,7 +3,7 @@ id: "004"
 title: "Workflow transitions (taskr start, taskr close)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build
