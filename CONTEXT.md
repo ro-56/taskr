@@ -50,6 +50,14 @@ A symmetric, non-directional relationship between two tickets. Stored in both ti
 
 Closed tickets move from `.tickets/` to `.tickets/archive/` on `taskr close`. Active listing excludes archived tickets; partial ID resolution includes them.
 
+## Violation
+
+A broken invariant detected by `taskr check` in a ticket file. Each violation is reported as a single line prefixed by the ticket ID, e.g. `TKT-a3f8bc2d: dependency TKT-deadbeef not found`. Output is machine-readable so an LLM or script can act on it.
+
+## Dangling Reference
+
+A `dependencies` or `links` entry whose ID does not resolve to any file in `.tickets/` or `.tickets/archive/`. Detected by `taskr check`; indicates a ticket was deleted or renamed outside of the CLI.
+
 ## Graph Context
 
 Compact dependency summary shown in `taskr show`:
