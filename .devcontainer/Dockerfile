@@ -8,6 +8,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install Go
+ARG GO_VERSION=1.26.4
+RUN curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" \
+    | tar -C /usr/local -xz
+ENV PATH="/usr/local/go/bin:${PATH}"
+
 ARG USERNAME=devuser
 
 RUN useradd -m -s /bin/bash $USERNAME
