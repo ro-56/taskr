@@ -3,7 +3,7 @@ id: "008"
 title: "Dependency tree (taskr dep-tree)"
 type: task
 mode: afk
-status: open
+status: done
 ---
 
 ## What to build
