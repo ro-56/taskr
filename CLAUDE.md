@@ -1,0 +1,66 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Build & test
+
+```sh
+# Build (version is injected at link time)
+go build -ldflags "-X main.version=1.0.0" -o taskr .
+
+# Run all tests
+go test ./...
+
+# Run a single test or package
+go test ./internal/tickets/... -run TestAdd
+go test ./internal/tickets/... -run TestLink
+
+# Run with verbose output
+go test -v ./internal/tickets/...
+```
+
+There is no linter config; the standard `go vet ./...` is the only static check in use.
+
+## Architecture
+
+The repo has two layers:
+
+**`cmd/`** — Cobra command definitions. Each file registers exactly one subcommand via a package-level `init()` that calls `rootCmd.AddCommand(...)`. Commands parse flags, resolve the working directory (`os.Getwd()`), and delegate to `internal/tickets`.
+
+**`internal/tickets/`** — All business logic. Functions take `dir string` (the project root) as their first argument. No global state.
+
+The **frontmatter is tool-owned**; the **body is user-owned**. Commands only rewrite the body when explicitly asked (e.g., `close --summary`).
+
+### Storage layout
+
+```
+.tickets/
+  config.json          # { "prefix": "TKT" }
+  <PREFIX>-<8hex>.md   # active tickets (open, in_progress)
+  archive/
+    <PREFIX>-<8hex>.md # closed tickets
+```
+
+Ticket IDs are `<PREFIX>-<8 lowercase hex chars>` generated from `crypto/rand`. Partial ID resolution does a `strings.HasPrefix` match against filenames in both dirs.
+
+### Dependency model
+
+Dependencies are stored as a list of full IDs in the dependent ticket's `dependencies` frontmatter field. `link.go` runs a BFS cycle check before writing. `check.go` validates dangling references and symmetry of `links` (related, non-directional) entries. A ticket is **blocked** if any dependency has status `open` or `in_progress`; it is **ready** if non-terminal and unblocked.
+
+### Adding a new command
+
+1. Create `cmd/<name>.go` — define the `cobra.Command`, wire flags, call `internal/tickets`.
+2. Create `internal/tickets/<name>.go` — implement the logic; accept `dir string` as first param.
+3. Add tests in `internal/tickets/<name>_test.go` using `t.TempDir()` + `tickets.Init(dir, "TKT")` for isolation.
+
+## Domain model (quick reference)
+
+| Concept | Value |
+|---|---|
+| Statuses | `open`, `in_progress`, `closed` |
+| Types | `bug`, `feature`, `task`, `epic`, `chore` |
+| Modes | `afk` (agent-runnable), `hitl` (needs human) |
+| Priority | `0`=critical … `3`=low; default `2` |
+| ID format | `PREFIX-[0-9a-f]{8}` |
+
+See `CONTEXT.md` for the full authoritative glossary.
