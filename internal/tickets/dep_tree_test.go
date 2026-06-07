@@ -113,14 +113,14 @@ func TestDepTree_Full_ExpandsRecursively(t *testing.T) {
 	}
 }
 
-func TestDepTree_AcceptsPartialID(t *testing.T) {
+func TestDepTree_AcceptsBareNumberID(t *testing.T) {
 	dir := t.TempDir()
 	tickets.Init(dir, "TKT")
-	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"})
+	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"}) // TKT-1
 
-	node, err := tickets.DepTree(dir, aID[:10], false)
+	node, err := tickets.DepTree(dir, "1", false)
 	if err != nil {
-		t.Fatalf("partial ID should resolve: %v", err)
+		t.Fatalf("bare-number ID should resolve: %v", err)
 	}
 	if node.ID != aID {
 		t.Errorf("ID: got %q, want %q", node.ID, aID)

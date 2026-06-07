@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -14,7 +13,7 @@ import (
 	"github.com/ro-56/taskr/internal/tickets"
 )
 
-func TestAdd_ReturnsValidID(t *testing.T) {
+func TestAdd_FirstTicketGetsSequentialID(t *testing.T) {
 	dir := t.TempDir()
 	if err := tickets.Init(dir, "TKT"); err != nil {
 		t.Fatal(err)
@@ -25,10 +24,27 @@ func TestAdd_ReturnsValidID(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	// must match TKT-xxxxxxxx (8 lowercase hex chars)
-	matched, _ := regexp.MatchString(`^TKT-[0-9a-f]{8}$`, id)
-	if !matched {
-		t.Errorf("id %q does not match PREFIX-xxxxxxxx format", id)
+	if id != "TKT-1" {
+		t.Errorf("expected id TKT-1, got %q", id)
+	}
+}
+
+func TestAdd_SecondTicketIncrementsID(t *testing.T) {
+	dir := t.TempDir()
+	if err := tickets.Init(dir, "TKT"); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := tickets.Add(dir, tickets.AddOptions{Title: "First"}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	id, err := tickets.Add(dir, tickets.AddOptions{Title: "Second"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if id != "TKT-2" {
+		t.Errorf("expected id TKT-2, got %q", id)
 	}
 }
 

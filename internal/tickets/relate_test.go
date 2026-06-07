@@ -66,19 +66,19 @@ func TestRelate_SelfRelate_Error(t *testing.T) {
 	}
 }
 
-func TestRelate_AcceptsPartialIDs(t *testing.T) {
+func TestRelate_AcceptsBareNumberIDs(t *testing.T) {
 	dir := t.TempDir()
 	tickets.Init(dir, "TKT")
-	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"})
-	bID, _ := tickets.Add(dir, tickets.AddOptions{Title: "B"})
+	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"}) // TKT-1
+	bID, _ := tickets.Add(dir, tickets.AddOptions{Title: "B"}) // TKT-2
 
-	if err := tickets.Relate(dir, aID[:10], bID[:10]); err != nil {
-		t.Fatalf("Relate with partial IDs: %v", err)
+	if err := tickets.Relate(dir, "1", "2"); err != nil {
+		t.Fatalf("Relate with bare-number IDs: %v", err)
 	}
 
 	aResult, _ := tickets.Show(dir, aID)
 	if !containsID(aResult.Frontmatter["links"], bID) {
-		t.Errorf("A.links does not contain B after partial-ID relate: %v", aResult.Frontmatter["links"])
+		t.Errorf("A.links does not contain B after bare-number relate: %v", aResult.Frontmatter["links"])
 	}
 }
 

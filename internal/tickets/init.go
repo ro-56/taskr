@@ -13,6 +13,7 @@ var ErrAlreadyInitialized = errors.New("already initialized")
 
 type Config struct {
 	Prefix string `json:"prefix"`
+	NextID int    `json:"next_id"`
 }
 
 func Init(dir, prefix string) error {
@@ -31,12 +32,24 @@ func Init(dir, prefix string) error {
 		prefix = DerivePrefix(filepath.Base(dir))
 	}
 
-	cfg := Config{Prefix: prefix}
+	return saveConfig(ticketsDir, Config{Prefix: prefix, NextID: 1})
+}
+
+func loadConfig(ticketsDir string) (Config, error) {
+	var cfg Config
+	data, err := os.ReadFile(filepath.Join(ticketsDir, "config.json"))
+	if err != nil {
+		return cfg, err
+	}
+	err = json.Unmarshal(data, &cfg)
+	return cfg, err
+}
+
+func saveConfig(ticketsDir string, cfg Config) error {
 	data, err := json.Marshal(cfg)
 	if err != nil {
 		return err
 	}
-
 	return os.WriteFile(filepath.Join(ticketsDir, "config.json"), data, 0644)
 }
 

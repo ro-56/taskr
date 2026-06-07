@@ -173,12 +173,12 @@ func TestUpdate_UpdatesTimestamp(t *testing.T) {
 	}
 }
 
-func TestUpdate_PartialID(t *testing.T) {
+func TestUpdate_BareNumberID(t *testing.T) {
 	dir := t.TempDir()
-	id := setupTicket(t, dir, tickets.AddOptions{Title: "partial"})
+	id := setupTicket(t, dir, tickets.AddOptions{Title: "bare number"}) // TKT-1
 
-	if err := tickets.Update(dir, id[:10], tickets.UpdateOptions{Title: ptr("patched")}); err != nil {
-		t.Fatalf("unexpected error with partial ID: %v", err)
+	if err := tickets.Update(dir, "1", tickets.UpdateOptions{Title: ptr("patched")}); err != nil {
+		t.Fatalf("unexpected error with bare-number ID: %v", err)
 	}
 
 	result, _ := tickets.Show(dir, id)

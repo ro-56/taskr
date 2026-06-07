@@ -88,14 +88,11 @@ func TestShow_IncludesBody(t *testing.T) {
 	}
 }
 
-func TestShow_PartialID_ResolvesToFull(t *testing.T) {
+func TestShow_BareNumber_ResolvesToFullID(t *testing.T) {
 	dir := t.TempDir()
-	id := setupTicket(t, dir, tickets.AddOptions{Title: "partial match"})
+	id := setupTicket(t, dir, tickets.AddOptions{Title: "bare number lookup"}) // -> "TKT-1"
 
-	// use first 10 chars of the ID (e.g. "TKT-a3f8bc" from "TKT-a3f8bc2d")
-	partial := id[:10]
-
-	result, err := tickets.Show(dir, partial)
+	result, err := tickets.Show(dir, "1")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -124,26 +121,28 @@ func TestShow_FindsArchivedTicket(t *testing.T) {
 	}
 }
 
-func TestShow_AmbiguousPartialID_ReturnsError(t *testing.T) {
+func TestShow_ExactMatch_DoesNotMatchSimilarNumericIDs(t *testing.T) {
 	dir := t.TempDir()
 	tickets.Init(dir, "TKT")
 
-	// create two tickets with the same prefix up to a short partial
-	// We can't control IDs, but we can use "TKT-" as the partial — all tickets match
-	tickets.Add(dir, tickets.AddOptions{Title: "first"})
-	tickets.Add(dir, tickets.AddOptions{Title: "second"})
-
-	_, err := tickets.Show(dir, "TKT-")
-	if err == nil {
-		t.Fatal("expected error for ambiguous partial ID, got nil")
+	// create 11 tickets so TKT-1, TKT-10 and TKT-11 all exist
+	var firstID string
+	for i := 0; i < 11; i++ {
+		id, err := tickets.Add(dir, tickets.AddOptions{Title: "ticket"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if i == 0 {
+			firstID = id
+		}
 	}
 
-	var ambErr *tickets.ErrAmbiguous
-	if !errors.As(err, &ambErr) {
-		t.Fatalf("expected ErrAmbiguous, got %T: %v", err, err)
+	result, err := tickets.Show(dir, "TKT-1")
+	if err != nil {
+		t.Fatalf("expected TKT-1 to resolve unambiguously, got error: %v", err)
 	}
-	if len(ambErr.Matches) < 2 {
-		t.Errorf("expected at least 2 matches, got %d: %v", len(ambErr.Matches), ambErr.Matches)
+	if result.ID != firstID {
+		t.Errorf("ID: got %q, want %q (TKT-1 must not match TKT-10/TKT-11)", result.ID, firstID)
 	}
 }
 

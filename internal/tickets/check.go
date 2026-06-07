@@ -1,7 +1,6 @@
 package tickets
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -27,15 +26,13 @@ func Check(dir string) ([]Violation, error) {
 		return nil, ErrNotInitialized
 	}
 
-	data, err := os.ReadFile(filepath.Join(ticketsDir, "config.json"))
+	cfg, err := loadConfig(ticketsDir)
 	if err != nil {
 		return nil, err
 	}
-	var cfg Config
-	if err := json.Unmarshal(data, &cfg); err != nil {
-		return nil, err
-	}
-	idPattern := regexp.MustCompile(`^` + regexp.QuoteMeta(cfg.Prefix) + `-[0-9a-f]{8}$`)
+	// Accepts both the new sequential format (no zero-padding) and the
+	// legacy 8-hex-char format used by tickets created before the switch.
+	idPattern := regexp.MustCompile(`^` + regexp.QuoteMeta(cfg.Prefix) + `-([1-9][0-9]*|[0-9a-f]{8})$`)
 
 	archiveDir := filepath.Join(ticketsDir, "archive")
 
@@ -130,7 +127,7 @@ func Check(dir string) ([]Violation, error) {
 
 		// ID format
 		if rawID != "" && !idPattern.MatchString(rawID) {
-			add(ticketID, fmt.Sprintf("id %q does not match expected format %s-[0-9a-f]{8}", rawID, cfg.Prefix))
+			add(ticketID, fmt.Sprintf("id %q does not match expected format %s-<n>", rawID, cfg.Prefix))
 		}
 
 		// File location

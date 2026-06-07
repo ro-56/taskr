@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -161,8 +162,18 @@ func statusOf(id, ticketsDir, archiveDir string) string {
 	return "unknown"
 }
 
-// resolveID finds the full path for a full or partial ticket ID.
-func resolveID(partialID, ticketsDir, archiveDir string) (string, error) {
+var bareNumber = regexp.MustCompile(`^[0-9]+$`)
+
+// resolveID finds the full path for a ticket ID. A bare number (e.g. "42")
+// is expanded to "<prefix>-42" before lookup. Matching is exact — no
+// prefix-matching against partial IDs.
+func resolveID(id, ticketsDir, archiveDir string) (string, error) {
+	if bareNumber.MatchString(id) {
+		if cfg, err := loadConfig(ticketsDir); err == nil {
+			id = cfg.Prefix + "-" + id
+		}
+	}
+
 	var matches []string
 
 	for _, dir := range []string{ticketsDir, archiveDir} {
@@ -175,7 +186,7 @@ func resolveID(partialID, ticketsDir, archiveDir string) (string, error) {
 				continue
 			}
 			name := strings.TrimSuffix(e.Name(), ".md")
-			if name == partialID || strings.HasPrefix(name, partialID) {
+			if name == id {
 				matches = append(matches, filepath.Join(dir, e.Name()))
 			}
 		}

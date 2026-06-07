@@ -35,13 +35,13 @@ The **frontmatter is tool-owned**; the **body is user-owned**. Commands only rew
 
 ```
 .tickets/
-  config.json          # { "prefix": "TKT" }
-  <PREFIX>-<8hex>.md   # active tickets (open, in_progress)
+  config.json          # { "prefix": "TKT", "next_id": 1 }
+  <PREFIX>-<n>.md      # active tickets (open, in_progress)
   archive/
-    <PREFIX>-<8hex>.md # closed tickets
+    <PREFIX>-<n>.md    # closed tickets
 ```
 
-Ticket IDs are `<PREFIX>-<8 lowercase hex chars>` generated from `crypto/rand`. Partial ID resolution does a `strings.HasPrefix` match against filenames in both dirs.
+Ticket IDs are `<PREFIX>-<n>`, a monotonically increasing integer with no zero-padding (e.g. `TKT-1`, `TKT-42`). The next integer to assign is stored as `next_id` in `config.json` and incremented on every `add`. ID resolution accepts either the full ID or a bare number (`42` expands to `PREFIX-42`); matching is exact — no prefix-matching.
 
 ### Dependency model
 
@@ -61,7 +61,7 @@ Dependencies are stored as a list of full IDs in the dependent ticket's `depende
 | Types | `bug`, `feature`, `task`, `epic`, `chore` |
 | Modes | `afk` (agent-runnable), `hitl` (needs human) |
 | Priority | `0`=critical … `3`=low; default `2` |
-| ID format | `PREFIX-[0-9a-f]{8}` |
+| ID format | `PREFIX-<n>` (sequential integer, no zero-padding) |
 | Relationships | `dependencies` (directional, blocking); `links` (symmetric, non-blocking via `relate`) |
 
 ### Commands at a glance

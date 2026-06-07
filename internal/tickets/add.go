@@ -1,12 +1,10 @@
 package tickets
 
 import (
-	"crypto/rand"
-	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -27,20 +25,17 @@ func Add(dir string, opts AddOptions) (string, error) {
 		return "", ErrNotInitialized
 	}
 
-	data, err := os.ReadFile(filepath.Join(ticketsDir, "config.json"))
+	cfg, err := loadConfig(ticketsDir)
 	if err != nil {
 		return "", err
 	}
-	var cfg Config
-	if err := json.Unmarshal(data, &cfg); err != nil {
-		return "", err
-	}
 
-	var b [4]byte
-	if _, err := rand.Read(b[:]); err != nil {
+	id := cfg.Prefix + "-" + strconv.Itoa(cfg.NextID)
+
+	cfg.NextID++
+	if err := saveConfig(ticketsDir, cfg); err != nil {
 		return "", err
 	}
-	id := cfg.Prefix + "-" + hex.EncodeToString(b[:])
 
 	now := time.Now().UTC()
 	ticketType := opts.Type

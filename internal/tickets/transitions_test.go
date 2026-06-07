@@ -85,11 +85,11 @@ func TestStart_ClosedTicket_ReturnsError(t *testing.T) {
 	}
 }
 
-func TestStart_PartialID(t *testing.T) {
+func TestStart_BareNumberID(t *testing.T) {
 	dir := t.TempDir()
-	id := setupTicket(t, dir, tickets.AddOptions{Title: "partial id"})
+	id := setupTicket(t, dir, tickets.AddOptions{Title: "bare number id"}) // TKT-1
 
-	if err := tickets.Start(dir, id[:10]); err != nil {
+	if err := tickets.Start(dir, "1"); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 

@@ -175,6 +175,23 @@ func TestCheck_IDFilenameMismatch(t *testing.T) {
 	}
 }
 
+func TestCheck_AcceptsLegacyHexID(t *testing.T) {
+	dir := t.TempDir()
+	tickets.Init(dir, "TKT")
+
+	// tickets created before the switch to sequential IDs use 8 lowercase hex chars
+	legacyID := "TKT-aabbccdd"
+	writeRawTicket(t, dir, legacyID, false, validFields(legacyID))
+
+	violations, err := tickets.Check(dir)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if containsViolation(violations, legacyID, "does not match expected format") {
+		t.Errorf("legacy hex ID should not be flagged as a format violation, got: %v", violations)
+	}
+}
+
 func TestCheck_IDFormatMismatch(t *testing.T) {
 	dir := t.TempDir()
 	tickets.Init(dir, "TKT")

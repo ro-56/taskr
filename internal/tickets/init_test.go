@@ -25,6 +25,24 @@ func TestInit_CustomPrefix(t *testing.T) {
 	}
 }
 
+func TestInit_SeedsNextID(t *testing.T) {
+	dir := t.TempDir()
+
+	if err := tickets.Init(dir, "TKT"); err != nil {
+		t.Fatalf("Init returned error: %v", err)
+	}
+
+	data, _ := os.ReadFile(filepath.Join(dir, ".tickets", "config.json"))
+	var cfg tickets.Config
+	if err := json.Unmarshal(data, &cfg); err != nil {
+		t.Fatalf("config.json is not valid JSON: %v", err)
+	}
+
+	if cfg.NextID != 1 {
+		t.Errorf("expected next_id 1, got %d", cfg.NextID)
+	}
+}
+
 func TestInit_AlreadyInitialized(t *testing.T) {
 	dir := t.TempDir()
 
@@ -71,7 +89,7 @@ func TestInit_CreatesDirectoriesAndConfig(t *testing.T) {
 		t.Fatalf("config.json missing: %v", err)
 	}
 
-	var cfg map[string]string
+	var cfg map[string]any
 	if err := json.Unmarshal(data, &cfg); err != nil {
 		t.Fatalf("config.json is not valid JSON: %v", err)
 	}

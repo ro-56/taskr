@@ -8,55 +8,55 @@ import (
 	"github.com/ro-56/taskr/internal/tickets"
 )
 
-// --- Partial IDs ---
+// --- Bare-number IDs ---
 
-func TestLink_AcceptsPartialIDs(t *testing.T) {
+func TestLink_AcceptsBareNumberIDs(t *testing.T) {
 	dir := t.TempDir()
 	tickets.Init(dir, "TKT")
-	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"})
-	bID, _ := tickets.Add(dir, tickets.AddOptions{Title: "B"})
+	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"}) // TKT-1
+	bID, _ := tickets.Add(dir, tickets.AddOptions{Title: "B"}) // TKT-2
 
-	if err := tickets.Link(dir, aID[:10], bID[:10]); err != nil {
-		t.Fatalf("Link with partial IDs: %v", err)
+	if err := tickets.Link(dir, "1", "2"); err != nil {
+		t.Fatalf("Link with bare-number IDs: %v", err)
 	}
 
 	result, _ := tickets.Show(dir, aID)
 	if len(result.DependsOn) != 1 || result.DependsOn[0].ID != bID {
-		t.Errorf("DependsOn after partial-ID link: got %v", result.DependsOn)
+		t.Errorf("DependsOn after bare-number link: got %v", result.DependsOn)
 	}
 }
 
-func TestUnlink_AcceptsPartialIDs(t *testing.T) {
+func TestUnlink_AcceptsBareNumberIDs(t *testing.T) {
 	dir := t.TempDir()
 	tickets.Init(dir, "TKT")
-	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"})
-	bID, _ := tickets.Add(dir, tickets.AddOptions{Title: "B"})
+	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"}) // TKT-1
+	bID, _ := tickets.Add(dir, tickets.AddOptions{Title: "B"}) // TKT-2
 
 	tickets.Link(dir, aID, bID)
-	if err := tickets.Unlink(dir, aID[:10], bID[:10]); err != nil {
-		t.Fatalf("Unlink with partial IDs: %v", err)
+	if err := tickets.Unlink(dir, "1", "2"); err != nil {
+		t.Fatalf("Unlink with bare-number IDs: %v", err)
 	}
 
 	result, _ := tickets.Show(dir, aID)
 	if len(result.DependsOn) != 0 {
-		t.Errorf("DependsOn after partial-ID unlink: got %v", result.DependsOn)
+		t.Errorf("DependsOn after bare-number unlink: got %v", result.DependsOn)
 	}
 }
 
-func TestPrune_AcceptsPartialID(t *testing.T) {
+func TestPrune_AcceptsBareNumberID(t *testing.T) {
 	dir := t.TempDir()
 	tickets.Init(dir, "TKT")
-	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"})
-	bID, _ := tickets.Add(dir, tickets.AddOptions{Title: "B"})
+	aID, _ := tickets.Add(dir, tickets.AddOptions{Title: "A"}) // TKT-1
+	bID, _ := tickets.Add(dir, tickets.AddOptions{Title: "B"}) // TKT-2
 
 	tickets.Link(dir, bID, aID)
-	if err := tickets.Prune(dir, aID[:10]); err != nil {
-		t.Fatalf("Prune with partial ID: %v", err)
+	if err := tickets.Prune(dir, "1"); err != nil {
+		t.Fatalf("Prune with bare-number ID: %v", err)
 	}
 
 	result, _ := tickets.Show(dir, bID)
 	if len(result.DependsOn) != 0 {
-		t.Errorf("B.DependsOn after partial-ID prune: got %v", result.DependsOn)
+		t.Errorf("B.DependsOn after bare-number prune: got %v", result.DependsOn)
 	}
 }
 
